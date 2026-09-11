@@ -9,6 +9,11 @@ const simpleIconLarge = document.querySelector('#simpleIconLarge');
 const simpleInstruction = document.querySelector('#simpleInstruction');
 const simpleGameArea = document.querySelector('#simpleGameArea');
 const simpleResult = document.querySelector('#simpleResult');
+function setGameActive(active) {
+    document.documentElement.classList.toggle('game-active', active);
+    document.body.classList.toggle('game-active', active);
+}
+
 function playGameSound(file, pitch = 520) {
     if (file) playSound(file);
     else playFallback(pitch);
@@ -28,6 +33,7 @@ const games = {
 
 function showHome() {
     stopSound();
+    setGameActive(false);
     animalWorld.hidden = true;
     simpleWorld.hidden = true;
     homeScreen.hidden = false;
@@ -37,6 +43,7 @@ function showSimpleGame(game) {
     const content = games[game];
     if (!content) return;
     stopSound();
+    setGameActive(true);
     homeScreen.hidden = true;
     animalWorld.hidden = true;
     simpleWorld.hidden = false;
@@ -50,6 +57,7 @@ function showSimpleGame(game) {
 
 document.querySelector('#openAnimals').addEventListener('click', () => {
     stopSound();
+    setGameActive(true);
     homeScreen.hidden = true;
     simpleWorld.hidden = true;
     animalWorld.hidden = false;

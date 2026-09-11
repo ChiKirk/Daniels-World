@@ -11,6 +11,23 @@ html, body {
     background: #071b2d;
 }
 
+html.game-active,
+body.game-active {
+    overflow: hidden;
+}
+
+body.game-active {
+    height: 100dvh;
+    min-height: 100dvh;
+}
+
+body.game-active .animal-world,
+body.game-active .simple-world {
+    height: 100dvh;
+    min-height: 100dvh;
+    overflow: hidden;
+}
+
 body {
     min-height: 100vh;
     min-height: 100dvh;
