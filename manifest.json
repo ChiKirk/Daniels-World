@@ -2,7 +2,7 @@
     "name": "Daniel's World",
     "short_name": "Daniel's World",
     "lang": "fi",
-    "start_url": "./Index.html",
+    "start_url": "./index.html",
     "display": "standalone",
     "background_color": "#071b2d",
     "theme_color": "#071b2d",
