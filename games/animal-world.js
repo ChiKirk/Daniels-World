@@ -39,6 +39,19 @@ function playAnimalSound(sound) {
     if (sound === 'mouse') {
         playTone(620, 0.09, 'square');
         playTone(760, 0.12, 'square', 0.11);
+    } else if (sound === 'cat') {
+        audioContext ??= new AudioContext();
+        const oscillator = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        oscillator.type = 'triangle';
+        oscillator.frequency.setValueAtTime(520, audioContext.currentTime);
+        oscillator.frequency.exponentialRampToValueAtTime(260, audioContext.currentTime + 0.42);
+        gain.gain.setValueAtTime(0.001, audioContext.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.3, audioContext.currentTime + 0.04);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.45);
+        oscillator.connect(gain).connect(audioContext.destination);
+        oscillator.start();
+        oscillator.stop(audioContext.currentTime + 0.46);
     } else {
         playTone(420, 0.12, 'triangle');
         playTone(300, 0.22, 'triangle', 0.14);
@@ -98,14 +111,15 @@ function finishLoading(model, settings) {
     speech.textContent = 'Paina eläintä!';
 }
 
+const remoteMousePath = 'https://raw.githubusercontent.com/ChiKirk/Daniels-World/main/Mouse/';
+const remoteMouseModel = 'https://media.githubusercontent.com/media/ChiKirk/Daniels-World/main/Mouse/model.obj';
 const mtlLoader = new MTLLoader();
 const objLoader = new OBJLoader();
-mtlLoader.setPath('Mouse/');
+mtlLoader.setPath(remoteMousePath);
 mtlLoader.load('material.mtl', (materials) => {
     materials.preload();
     objLoader.setMaterials(materials);
-    objLoader.setPath('Mouse/');
-    objLoader.load('model.obj', (model) => {
+    objLoader.load(remoteMouseModel, (model) => {
         finishLoading(model, {
             name: 'Hiiri', sound: 'mouse', maxSize: 3.9,
             position: [-1.7, 0, -1.1], rotation: 0.35,
