@@ -1,18 +1,4 @@
-const targetDuration = 0.9;
 const sounds = new Map();
-const soundStartOffsets = Object.freeze({
-    Ball: 0.027,
-    Balloon: 0.072,
-    Cat: 0.05,
-    Complete: 0.161,
-    Dog: 0.023,
-    Duck: 0.05,
-    Elephant: 0.048,
-    Lion: 0.023,
-    Monkey: 0.452,
-    Star: 0.212,
-    Tractor: 0.017
-});
 let stopActiveSound = null;
 
 function getSound(name) {
@@ -26,7 +12,8 @@ function getSound(name) {
     return sounds.get(name);
 }
 
-Object.keys(soundStartOffsets).forEach((name) => getSound(name).load());
+['Ball', 'Balloon', 'Cat', 'Complete', 'Dog', 'Duck', 'Elephant', 'Lion', 'Monkey', 'Star', 'Tractor']
+    .forEach((name) => getSound(name).load());
 
 export function hasSound(name) {
     return Boolean(name);
@@ -40,11 +27,9 @@ export function stopSound() {
 export function playSound(name, fallbackPitch = 520) {
     const audio = getSound(name);
     stopSound();
-    audio.currentTime = soundStartOffsets[name] ?? 0;
+    audio.currentTime = 0;
     audio.volume = 1;
-    if (Number.isFinite(audio.duration) && audio.duration > 0) {
-        audio.playbackRate = Math.max(0.5, Math.min(3, audio.duration / targetDuration));
-    }
+    audio.playbackRate = 1;
     const playPromise = audio.play();
     if (playPromise) playPromise.catch(() => {});
     stopActiveSound = () => {
