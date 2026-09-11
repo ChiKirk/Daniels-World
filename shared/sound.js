@@ -3,7 +3,8 @@ const sounds = new Map();
 
 function getSound(name) {
     if (!sounds.has(name)) {
-        const audio = new Audio(`../Sounds/${name}.mp3`);
+        const audioUrl = new URL(`../Sounds/${name}.mp3`, import.meta.url).href;
+        const audio = new Audio(audioUrl);
         audio.preload = 'auto';
         audio.volume = 1;
         sounds.set(name, audio);
@@ -23,7 +24,7 @@ export function playSound(name, fallbackPitch = 520) {
         audio.playbackRate = Math.max(0.5, Math.min(3, audio.duration / targetDuration));
     }
     const playPromise = audio.play();
-    if (playPromise) playPromise.catch(() => playFallback(fallbackPitch));
+    if (playPromise) playPromise.catch(() => {});
 }
 
 export function playFallback(frequency = 520) {
