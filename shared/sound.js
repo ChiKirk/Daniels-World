@@ -13,19 +13,6 @@ const soundStartOffsets = Object.freeze({
     Star: 0.212,
     Tractor: 0.017
 });
-const soundEndOffsets = Object.freeze({
-    Ball: 1.602,
-    Balloon: 0.672,
-    Cat: 0.022,
-    Complete: 3.376,
-    Dog: 0.009,
-    Duck: 0.02,
-    Elephant: 0.03,
-    Lion: 0.01,
-    Monkey: 0.192,
-    Star: 0.567,
-    Tractor: 0.001
-});
 let stopActiveSound = null;
 
 function getSound(name) {
@@ -34,12 +21,6 @@ function getSound(name) {
         const audio = new Audio(audioUrl);
         audio.preload = 'auto';
         audio.volume = 1;
-        audio.addEventListener('timeupdate', () => {
-            const endOffset = soundEndOffsets[name] ?? 0;
-            if (endOffset > 0 && audio.duration > 0 && audio.currentTime >= audio.duration - endOffset) {
-                audio.pause();
-            }
-        });
         sounds.set(name, audio);
     }
     return sounds.get(name);
@@ -51,9 +32,14 @@ export function hasSound(name) {
     return Boolean(name);
 }
 
+export function stopSound() {
+    stopActiveSound?.();
+    stopActiveSound = null;
+}
+
 export function playSound(name, fallbackPitch = 520) {
     const audio = getSound(name);
-    stopActiveSound?.();
+    stopSound();
     audio.currentTime = soundStartOffsets[name] ?? 0;
     audio.volume = 1;
     if (Number.isFinite(audio.duration) && audio.duration > 0) {
@@ -68,7 +54,7 @@ export function playSound(name, fallbackPitch = 520) {
 }
 
 export function playFallback(frequency = 520) {
-    stopActiveSound?.();
+    stopSound();
     const context = playFallback.context ??= new AudioContext();
     const oscillator = context.createOscillator();
     const gain = context.createGain();

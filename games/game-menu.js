@@ -1,4 +1,4 @@
-import { playFallback, playSound } from '../shared/sound.js';
+import { playFallback, playSound, stopSound } from '../shared/sound.js';
 
 const homeScreen = document.querySelector('#homeScreen');
 const animalWorld = document.querySelector('#animalWorld');
@@ -27,6 +27,7 @@ const games = {
 };
 
 function showHome() {
+    stopSound();
     animalWorld.hidden = true;
     simpleWorld.hidden = true;
     homeScreen.hidden = false;
@@ -35,6 +36,7 @@ function showHome() {
 function showSimpleGame(game) {
     const content = games[game];
     if (!content) return;
+    stopSound();
     homeScreen.hidden = true;
     animalWorld.hidden = true;
     simpleWorld.hidden = false;
@@ -47,6 +49,7 @@ function showSimpleGame(game) {
 }
 
 document.querySelector('#openAnimals').addEventListener('click', () => {
+    stopSound();
     homeScreen.hidden = true;
     simpleWorld.hidden = true;
     animalWorld.hidden = false;
@@ -85,9 +88,10 @@ function bindGame(game, gameSound) {
         area.querySelector('[data-action="ball"]').addEventListener('click', (event) => {
             playGameSound(gameSound, 460);
             const count = area.querySelector('[data-count]');
+            const ball = event.currentTarget;
             count.textContent = Number(count.textContent) + 1;
-            event.currentTarget.classList.remove('is-kicking');
-            requestAnimationFrame(() => event.currentTarget.classList.add('is-kicking'));
+            ball.classList.remove('is-kicking');
+            requestAnimationFrame(() => ball.classList.add('is-kicking'));
             simpleResult.textContent = 'Hieno potku!';
         });
     }
