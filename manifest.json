@@ -9,7 +9,7 @@
     "orientation": "portrait",
     "icons": [
         {
-            "src": "assets/daniels-world-icon.svg",
+            "src": "assets/lion-icon.svg",
             "sizes": "any",
             "type": "image/svg+xml",
             "purpose": "any maskable"

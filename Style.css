@@ -115,6 +115,13 @@ h1 {
 .instruction { margin: 0 0 8px; font-size: 1.25rem; }
 .animal-scene { position: relative; flex: 1; min-height: 0; overflow: hidden; border-radius: 20px; }
 .animal-scene canvas { display: block; width: 100%; height: 100%; cursor: pointer; }
+.animal-scene--2d { display: grid; grid-template-columns: repeat(2, minmax(120px, 1fr)); align-content: center; gap: 18px; padding: 24px; background: linear-gradient(180deg, #8ed8e3 0 48%, #78c46e 48% 100%); }
+.animal-2d { min-height: 150px; border: 0; border-radius: 24px; background: rgba(255, 250, 230, 0.9); color: #173049; cursor: pointer; box-shadow: 0 8px 0 rgba(36, 94, 65, 0.25); transition: transform 0.18s ease, filter 0.18s ease; }
+.animal-2d:hover, .animal-2d:focus-visible { transform: translateY(-6px); filter: brightness(1.06); outline: 4px solid #efbd5e; }
+.animal-2d.is-active { animation: animal-2d-hop 0.7s ease; }
+.animal-2d__emoji { display: block; font-size: clamp(4.2rem, 17vw, 7rem); line-height: 1; }
+.animal-2d__name { display: block; margin-top: 10px; font-size: 0.9rem; font-weight: 800; }
+@keyframes animal-2d-hop { 0%, 100% { transform: translateY(0) rotate(0); } 35% { transform: translateY(-22px) rotate(-5deg); } 70% { transform: translateY(0) rotate(5deg); } }
 .speech { min-height: 28px; margin: 24px 0 0; font-size: 1.15rem; }
 .simple-stage { min-height: calc(100dvh - 112px); height: calc(100dvh - 112px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px; border: 2px solid rgba(255, 245, 214, 0.2); border-radius: 28px; background: linear-gradient(145deg, #236079, #173e57); }
 .simple-visual { margin: 0; font-size: clamp(5rem, 25vw, 9rem); line-height: 1; }
@@ -175,6 +182,8 @@ h1 {
     }
 
     .animal-stage { min-height: calc(100dvh - 96px); height: calc(100dvh - 96px); padding: 18px 12px 20px; }
+    .animal-scene--2d { padding: 12px; gap: 10px; }
+    .animal-2d { min-height: 125px; }
     .simple-stage { min-height: calc(100dvh - 96px); height: calc(100dvh - 96px); }
     .puzzle-board { grid-template-columns: repeat(3, 64px); }
     .puzzle-piece { width: 64px; }
