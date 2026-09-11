@@ -1,3 +1,5 @@
+import { playFallback, playSound } from '../shared/sound.js';
+
 const homeScreen = document.querySelector('#homeScreen');
 const animalWorld = document.querySelector('#animalWorld');
 const simpleWorld = document.querySelector('#simpleWorld');
@@ -7,32 +9,21 @@ const simpleIconLarge = document.querySelector('#simpleIconLarge');
 const simpleInstruction = document.querySelector('#simpleInstruction');
 const simpleGameArea = document.querySelector('#simpleGameArea');
 const simpleResult = document.querySelector('#simpleResult');
-let gameAudioContext;
-
-function playGameClick(pitch = 520) {
-    gameAudioContext ??= new AudioContext();
-    const oscillator = gameAudioContext.createOscillator();
-    const gain = gameAudioContext.createGain();
-    oscillator.type = 'triangle';
-    oscillator.frequency.setValueAtTime(pitch, gameAudioContext.currentTime);
-    gain.gain.setValueAtTime(0.001, gameAudioContext.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.16, gameAudioContext.currentTime + 0.015);
-    gain.gain.exponentialRampToValueAtTime(0.001, gameAudioContext.currentTime + 0.12);
-    oscillator.connect(gain).connect(gameAudioContext.destination);
-    oscillator.start();
-    oscillator.stop(gameAudioContext.currentTime + 0.13);
+function playGameSound(file, pitch = 520) {
+    if (file) playSound(file);
+    else playFallback(pitch);
 }
 
 const games = {
-    ball: { title: 'Potkaise pallo', icon: '⚽', instruction: 'Paina palloa niin monta kertaa kuin haluat!' },
-    balloons: { title: 'Poksauta ilmapallot', icon: '🎈', instruction: 'Poksauta kaikki ilmapallot!' },
+    ball: { title: 'Potkaise pallo', icon: '⚽', instruction: 'Paina palloa niin monta kertaa kuin haluat!', sound: 'Ball' },
+    balloons: { title: 'Poksauta ilmapallot', icon: '🎈', instruction: 'Poksauta kaikki ilmapallot!', sound: 'Balloon' },
     carwash: { title: 'Autopesula', icon: '🚗', instruction: 'Paina autoa ja pese lika pois!' },
     puzzle: { title: 'Palapeli', icon: '🧩', instruction: 'Paina palat numerojärjestyksessä!' },
     colors: { title: 'Värit', icon: '🔴', instruction: 'Valitse pyydetty väri!' },
     letters: { title: 'Kirjainpeli', icon: '🔤', instruction: 'Löydä kirjain A!' },
     fruit: { title: 'Kerää hedelmät', icon: '🍎', instruction: 'Kerää kaikki hedelmät!' },
-    construction: { title: 'Rakennustyömaa', icon: '🚜', instruction: 'Aja kone lippuun asti!' },
-    bedtime: { title: 'Iltasat-seikkailu', icon: '🌙', instruction: 'Sytytä kaikki tähdet!' }
+    construction: { title: 'Rakennustyömaa', icon: '🚜', instruction: 'Aja kone lippuun asti!', sound: 'Tractor' },
+    bedtime: { title: 'Iltasat-seikkailu', icon: '🌙', instruction: 'Sytytä kaikki tähdet!', sound: 'Star' }
 };
 
 function showHome() {
@@ -52,7 +43,7 @@ function showSimpleGame(game) {
     simpleIconLarge.textContent = content.icon;
     simpleInstruction.textContent = content.instruction;
     simpleResult.textContent = '';
-    renderGame(game);
+    renderGame(game, content.sound);
 }
 
 document.querySelector('#openAnimals').addEventListener('click', () => {
@@ -67,7 +58,7 @@ document.querySelectorAll('[data-simple-game]').forEach((button) => {
     button.addEventListener('click', () => showSimpleGame(button.dataset.simpleGame));
 });
 
-function renderGame(game) {
+function renderGame(game, gameSound) {
     const views = {
         ball: '<button class="play-object ball-object" data-action="ball" aria-label="Pallo">⚽</button><span class="game-score">Potkut: <b data-count>0</b></span>',
         balloons: '<div class="balloon-field">' + ['🔴', '🟡', '🔵', '🟢', '🟣'].map((balloon) => `<button class="play-object balloon-object" data-action="balloon" aria-label="Ilmapallo">${balloon}</button>`).join('') + '</div><span class="game-score">Jäljellä: <b data-count>5</b></span>',
@@ -80,14 +71,19 @@ function renderGame(game) {
         bedtime: '<div class="star-field">' + ['★', '★', '★'].map(() => '<button class="star-object" data-action="star" aria-label="Tähti">☆</button>').join('') + '</div>'
     };
     simpleGameArea.innerHTML = views[game];
-    bindGame(game);
+    bindGame(game, gameSound);
 }
 
-function bindGame(game) {
+function completeGame(message) {
+    playSound('Complete');
+    simpleResult.textContent = message;
+}
+
+function bindGame(game, gameSound) {
     const area = simpleGameArea;
     if (game === 'ball') {
         area.querySelector('[data-action="ball"]').addEventListener('click', (event) => {
-            playGameClick(460);
+            playGameSound(gameSound, 460);
             const count = area.querySelector('[data-count]');
             count.textContent = Number(count.textContent) + 1;
             event.currentTarget.classList.remove('is-kicking');
@@ -97,53 +93,58 @@ function bindGame(game) {
     }
     if (game === 'balloons' || game === 'fruit') {
         area.querySelectorAll('[data-action="balloon"], [data-action="fruit"]').forEach((item) => item.addEventListener('click', () => {
-            playGameClick(game === 'balloons' ? 700 : 560);
+            playGameSound(gameSound, game === 'balloons' ? 700 : 560);
             const count = area.querySelector('[data-count]');
             count.textContent = Number(count.textContent) - (game === 'balloons' ? 1 : -1);
             item.remove();
             simpleResult.textContent = game === 'balloons' ? 'Poks!' : 'Hedelmä kerätty!';
-            if (!area.querySelector('[data-action="balloon"], [data-action="fruit"]')) simpleResult.textContent = 'Hienoa, kaikki kerätty!';
+            if (!area.querySelector('[data-action="balloon"], [data-action="fruit"]')) completeGame('Hienoa, kaikki kerätty!');
         }));
     }
     if (game === 'carwash') {
         let clean = 0;
         area.querySelector('[data-action="wash"]').addEventListener('click', () => {
-            playGameClick(420);
+            playGameSound(null, 420);
             clean = Math.min(clean + 20, 100);
             area.querySelector('.wash-meter span').style.width = `${clean}%`;
-            simpleResult.textContent = clean === 100 ? 'Auto on puhdas!' : 'Pese vielä vähän!';
+            if (clean === 100) completeGame('Auto on puhdas!');
+            else simpleResult.textContent = 'Pese vielä vähän!';
         });
     }
     if (game === 'puzzle') {
         let next = 1;
         area.querySelectorAll('[data-piece]').forEach((piece) => piece.addEventListener('click', () => {
-            playGameClick(500);
+            playGameSound(null, 500);
             if (Number(piece.dataset.piece) !== next) { simpleResult.textContent = `Etsi ensin pala ${next}.`; return; }
             piece.disabled = true; piece.classList.add('placed'); next += 1;
             area.querySelector('[data-next]').textContent = next <= 3 ? next : 'valmis';
-            simpleResult.textContent = next > 3 ? 'Palapeli valmis!' : 'Hyvä pala!';
+            if (next > 3) completeGame('Palapeli valmis!');
+            else simpleResult.textContent = 'Hyvä pala!';
         }));
     }
     if (game === 'colors') area.querySelectorAll('[data-color]').forEach((item) => item.addEventListener('click', () => {
-        playGameClick(item.dataset.color === 'red' ? 620 : 360);
+        playGameSound(null, item.dataset.color === 'red' ? 620 : 360);
         simpleResult.textContent = item.dataset.color === 'red' ? 'Oikein!' : 'Kokeile punaista.';
+        if (item.dataset.color === 'red') completeGame('Oikea väri!');
     }));
     if (game === 'letters') area.querySelectorAll('[data-letter]').forEach((item) => item.addEventListener('click', () => {
-        playGameClick(item.dataset.letter === 'A' ? 760 : 330);
+        playGameSound(null, item.dataset.letter === 'A' ? 760 : 330);
         simpleResult.textContent = item.dataset.letter === 'A' ? 'Löysit A-kirjaimen!' : 'Etsi vielä A-kirjainta.';
-        if (item.dataset.letter === 'A') item.classList.add('found');
+        if (item.dataset.letter === 'A') { item.classList.add('found'); completeGame('Löysit A-kirjaimen!'); }
     }));
     if (game === 'construction') area.querySelector('[data-action="drive"]').addEventListener('click', (event) => {
-        playGameClick(390);
+        playGameSound(gameSound, 390);
         const count = area.querySelector('[data-count]');
         const value = Math.min(Number(count.textContent) + 1, 5);
         count.textContent = value;
         event.currentTarget.style.transform = `translateX(${value * 42}px)`;
-        simpleResult.textContent = value === 5 ? 'Pääsit perille!' : 'Aja eteenpäin!';
+        if (value === 5) completeGame('Pääsit perille!');
+        else simpleResult.textContent = 'Aja eteenpäin!';
     });
     if (game === 'bedtime') area.querySelectorAll('[data-action="star"]').forEach((item) => item.addEventListener('click', () => {
-        playGameClick(820);
+        playGameSound(gameSound, 820);
         item.textContent = '★'; item.classList.add('lit');
-        simpleResult.textContent = area.querySelectorAll('.star-object.lit').length === 3 ? 'Hyvää yötä!' : 'Kaunis tähti!';
+        if (area.querySelectorAll('.star-object.lit').length === 3) completeGame('Hyvää yötä!');
+        else simpleResult.textContent = 'Kaunis tähti!';
     }));
 }

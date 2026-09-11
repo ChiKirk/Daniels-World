@@ -1,41 +1,18 @@
 const animalScene = document.querySelector('#animalScene');
 const speech = document.querySelector('#speech');
-let audioContext;
+import { playSound } from '../shared/sound.js';
 
 const animals = [
-    { emoji: '🦁', name: 'Leijona', sound: 'Murrr!', className: 'lion' },
-    { emoji: '🐘', name: 'Elefantti', sound: 'Pruut!', className: 'elephant' },
-    { emoji: '🐒', name: 'Apina', sound: 'Uh uh!', className: 'monkey' },
-    { emoji: '🦆', name: 'Ankka', sound: 'Kvaak!', className: 'duck' }
+    { emoji: '🦁', name: 'Leijona', sound: 'Murrr!', file: 'Lion', className: 'lion' },
+    { emoji: '🐘', name: 'Elefantti', sound: 'Pruut!', file: 'Elephant', className: 'elephant' },
+    { emoji: '🐒', name: 'Apina', sound: 'Uh uh!', file: 'Monkey', className: 'monkey' },
+    { emoji: '🦆', name: 'Ankka', sound: 'Kvaak!', file: 'Duck', className: 'duck' },
+    { emoji: '🐱', name: 'Kissa', sound: 'Miau!', file: 'Cat', className: 'cat' },
+    { emoji: '🐶', name: 'Koira', sound: 'Hau hau!', file: 'Dog', className: 'dog' }
 ];
 
-function playTone(frequency, duration, type = 'sine', delay = 0) {
-    audioContext ??= new AudioContext();
-    const oscillator = audioContext.createOscillator();
-    const gain = audioContext.createGain();
-    oscillator.type = type;
-    oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime + delay);
-    gain.gain.setValueAtTime(0.001, audioContext.currentTime + delay);
-    gain.gain.exponentialRampToValueAtTime(0.22, audioContext.currentTime + delay + 0.02);
-    gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + delay + duration);
-    oscillator.connect(gain).connect(audioContext.destination);
-    oscillator.start(audioContext.currentTime + delay);
-    oscillator.stop(audioContext.currentTime + delay + duration);
-}
-
 function playAnimalSound(animal) {
-    const tones = {
-        lion: [110, 82], elephant: [260, 150], monkey: [420, 580], duck: [520, 680]
-    };
-    const [first, second] = tones[animal.className];
-    playTone(first, 0.18, 'triangle');
-    playTone(second, 0.22, 'triangle', 0.14);
-    const utterance = new SpeechSynthesisUtterance(animal.sound);
-    utterance.lang = 'fi-FI';
-    utterance.rate = 0.75;
-    utterance.pitch = animal.className === 'lion' ? 0.6 : 1.1;
-    speechSynthesis.cancel();
-    speechSynthesis.speak(utterance);
+    playSound(animal.file);
 }
 
 function activateAnimal(button, animal) {
