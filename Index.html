@@ -3,69 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#6c63ff">
-
+    <meta name="theme-color" content="#111827">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="assets/daniels-world-icon.svg" type="image/svg+xml">
     <title>Daniel's World</title>
-
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="Style.css">
 </head>
 
 <body>
+    <main class="home-screen" id="homeScreen">
+        <p class="eyebrow">Tervetuloa</p>
+        <h1>Daniel's World</h1>
 
-    <main class="home">
-
-        <h1>🌟 Daniel's World 🌟</h1>
-
-        <div class="games">
-
-            <button class="game-button animals">
-                <span class="icon">🐶</span>
-                <span>Eläimet</span>
+        <nav class="game-list" aria-label="Pelicategorioiden valikko">
+            <button class="game-item game-item--animals" id="openAnimals" type="button">
+                <span class="icon" aria-hidden="true">🎯</span>
+                <span class="label">Eläinten maailma</span>
+                <span class="status">Pelaa nyt</span>
             </button>
-
-            <button class="game-button football">
-                <span class="icon">⚽</span>
-                <span>Jalkapallo</span>
-            </button>
-
-            <button class="game-button balloons">
-                <span class="icon">🎈</span>
-                <span>Ilmapallot</span>
-            </button>
-
-            <button class="game-button cars">
-                <span class="icon">🚗</span>
-                <span>Autot</span>
-            </button>
-
-            <button class="game-button puzzle">
-                <span class="icon">🧩</span>
-                <span>Palapeli</span>
-            </button>
-
-            <button class="game-button colors">
-                <span class="icon">🔴</span>
-                <span>Värit</span>
-            </button>
-
-            <button class="game-button letters">
-                <span class="icon">🔤</span>
-                <span>Kirjaimet</span>
-            </button>
-
-            <button class="game-button fruits">
-                <span class="icon">🍎</span>
-                <span>Hedelmät</span>
-            </button>
-
-            <button class="game-button construction">
-                <span class="icon">🚜</span>
-                <span>Työmaa</span>
-            </button>
-
-        </div>
-
+            <button class="game-item" data-simple-game="ball" type="button"><span class="icon" aria-hidden="true">⚽</span><span class="label">Potkaise pallo</span></button>
+            <button class="game-item" data-simple-game="balloons" type="button"><span class="icon" aria-hidden="true">🎈</span><span class="label">Poksauta ilmapallot</span></button>
+            <button class="game-item" data-simple-game="carwash" type="button"><span class="icon" aria-hidden="true">🚗</span><span class="label">Autopesula</span></button>
+            <button class="game-item" data-simple-game="puzzle" type="button"><span class="icon" aria-hidden="true">🧩</span><span class="label">Palapeli</span></button>
+            <button class="game-item" data-simple-game="colors" type="button"><span class="icon" aria-hidden="true">🔴</span><span class="label">Värit</span></button>
+            <button class="game-item" data-simple-game="letters" type="button"><span class="icon" aria-hidden="true">🔤</span><span class="label">Kirjainpeli</span></button>
+            <button class="game-item" data-simple-game="fruit" type="button"><span class="icon" aria-hidden="true">🍎</span><span class="label">Kerää hedelmät</span></button>
+            <button class="game-item" data-simple-game="construction" type="button"><span class="icon" aria-hidden="true">🚜</span><span class="label">Rakennustyömaa</span></button>
+            <button class="game-item" data-simple-game="bedtime" type="button"><span class="icon" aria-hidden="true">🌙</span><span class="label">Iltasat-seikkailu</span></button>
+        </nav>
     </main>
 
+    <main class="animal-world" id="animalWorld" hidden>
+        <header class="game-header">
+            <button class="back-button" id="backToHome" type="button" aria-label="Palaa pelivalikkoon">←</button>
+            <div>
+                <p class="eyebrow">Ensimmäinen peli</p>
+                <h2>Eläinten maailma</h2>
+            </div>
+            <span class="game-badge" aria-hidden="true">🌿</span>
+        </header>
+
+        <section class="animal-stage" aria-labelledby="animalInstruction">
+            <p class="instruction" id="animalInstruction">Paina 3D-eläintä!</p>
+            <div class="animal-scene" id="animalScene" role="img" aria-label="Kolmiulotteinen hiiren ja kissan maisema"></div>
+            <p class="speech" id="speech" aria-live="polite">Mikä eläin kurkistaa?</p>
+        </section>
+    </main>
+
+    <main class="simple-world" id="simpleWorld" hidden>
+        <header class="game-header">
+            <button class="back-button" id="backFromSimple" type="button" aria-label="Palaa pelivalikkoon">←</button>
+            <div>
+                <p class="eyebrow">Pieni peliversio</p>
+                <h2 id="simpleTitle">Peli</h2>
+            </div>
+            <span class="game-badge" id="simpleIcon" aria-hidden="true">⭐</span>
+        </header>
+        <section class="simple-stage">
+            <p class="simple-visual" id="simpleIconLarge" aria-hidden="true">⭐</p>
+            <p class="instruction" id="simpleInstruction">Pelaa!</p>
+            <div class="simple-game-area" id="simpleGameArea"></div>
+            <p class="speech" id="simpleResult" aria-live="polite"></p>
+        </section>
+    </main>
+
+    <script type="module" src="games/animal-world.js"></script>
+    <script type="module" src="games/game-menu.js"></script>
 </body>
 </html>
